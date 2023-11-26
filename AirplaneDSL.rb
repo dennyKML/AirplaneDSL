@@ -75,13 +75,15 @@ class Airplane
   end
 
   def info
-    "Purpose: #{@purpose}\n" +
-      "Weight Class: #{@weight_class}\n" +
-      "Speed: #{@speed}\n" +
-      "Landing Gear Type: #{@landing_gear_type}\n" +
-      "Takeoff Type: #{@takeoff_type}\n" +
-      "Thrust Source: #{@thrust_source}\n" +
-      "Engine: #{@engine}"
+    info = ""
+    info += "\nPurpose: #{@purpose}" if @purpose
+    info += "\nWeight Class: #{@weight_class}" if @weight_class
+    info += "\nSpeed: #{@speed}" if @speed
+    info += "\nLanding Gear Type: #{@landing_gear_type}" if @landing_gear_type
+    info += "\nTakeoff Type: #{@takeoff_type}" if @takeoff_type
+    info += "\nThrust Source: #{@thrust_source}" if @thrust_source
+    info += "\nEngine: #{@engine}" if @engine
+    info
   end
 
   def update(&block)
@@ -90,26 +92,44 @@ class Airplane
   end
 
   def self.compare(airplane1, airplane2)
-    "\tComparing two airplanes:\n" +
-      "Purpose: #{airplane1.purpose} vs #{airplane2.purpose}\n" +
-      "Weight Class: #{airplane1.weight_class} vs #{airplane2.weight_class}\n" +
-      "Speed: #{airplane1.speed} vs #{airplane2.speed}\n" +
-      "Landing Gear Type: #{airplane1.landing_gear_type} vs #{airplane2.landing_gear_type}\n" +
-      "Takeoff Type: #{airplane1.takeoff_type} vs #{airplane2.takeoff_type}\n" +
-      "Thrust Source: #{airplane1.thrust_source} vs #{airplane2.thrust_source}\n" +
-      "Engine: #{airplane1.engine} vs #{airplane2.engine}"
+    comparison = "\n\tComparing two airplanes:\n"
+    comparison += compare_attribute("Purpose", airplane1.purpose, airplane2.purpose)
+    comparison += compare_attribute("Weight Class", airplane1.weight_class, airplane2.weight_class)
+    comparison += compare_attribute("Speed", airplane1.speed, airplane2.speed)
+    comparison += compare_attribute("Landing Gear Type", airplane1.landing_gear_type, airplane2.landing_gear_type)
+    comparison += compare_attribute("Takeoff Type", airplane1.takeoff_type, airplane2.takeoff_type)
+    comparison += compare_attribute("Thrust Source", airplane1.thrust_source, airplane2.thrust_source)
+    comparison += compare_attribute("Engine", airplane1.engine, airplane2.engine)
+    comparison
   end
 
   private
 
+  def self.compare_attribute(attribute_name, value1, value2)
+    if value1 || value2
+      value1 ||= "'undefined'"
+      value2 ||= "'undefined'"
+
+      if value1 != value2
+        comparison = "#{attribute_name}:\e[33m #{value1} vs #{value2}\n\e[0m" # ANSI escape sequence '\e[33m' (start yellow color) and ''\e[0m' (reset color)
+      else
+        comparison = "#{attribute_name}: #{value1} vs #{value2}\n"
+      end
+    else
+      comparison = ""
+    end
+
+    comparison
+  end
+
   def validate!
-    raise "Invalid purpose!" unless VALID_PURPOSES.include?(@purpose)
-    raise "Invalid weight class!" unless VALID_WEIGHT_CLASSES.include?(@weight_class)
-    raise "Invalid speed!" unless VALID_SPEEDS.include?(@speed)
-    raise "Invalid landing gear type!" unless VALID_LANDING_GEAR_TYPES.include?(@landing_gear_type)
-    raise "Invalid takeoff type!" unless VALID_TAKEOFF_TYPES.include?(@takeoff_type)
-    raise "Invalid thrust source!" unless VALID_THRUST_SOURCES.include?(@thrust_source)
-    raise "Invalid engine!" unless VALID_ENGINES.include?(@engine)
+    raise "Invalid purpose!" if @purpose && !VALID_PURPOSES.include?(@purpose)
+    raise "Invalid weight class!" if @weight_class && !VALID_WEIGHT_CLASSES.include?(@weight_class)
+    raise "Invalid speed!" if @speed && !VALID_SPEEDS.include?(@speed)
+    raise "Invalid landing gear type!" if @landing_gear_type && !VALID_LANDING_GEAR_TYPES.include?(@landing_gear_type)
+    raise "Invalid takeoff type!" if @takeoff_type && !VALID_TAKEOFF_TYPES.include?(@takeoff_type)
+    raise "Invalid thrust source!" if @thrust_source && !VALID_THRUST_SOURCES.include?(@thrust_source)
+    raise "Invalid engine!" if @engine && !VALID_ENGINES.include?(@engine)
 
     if @weight_class == 1 && @speed == 'Hypersonic' && @takeoff_type == 'Vertical' && @engine == 'Turboprop'
       raise "Impossible combination: Class 1, Hypersonic, Vertical takeoff, Turboprop engine"

@@ -2,7 +2,6 @@ require_relative 'AirplaneDSL'
 
 begin
   puts "Trying to create a new airplane..."
-  puts
 
   airplane = Airplane.new do
     purpose 'Military'
@@ -20,23 +19,42 @@ begin
     speed 'Supersonic'
   end
 
-  puts
-  puts "Trying to create one more new airplane..."
+  puts "\nTrying to create one more new airplane..."
   airplane2 = Airplane.new do
     purpose 'Civilian'
     weight_class 2
     speed 'Subsonic'
     landing_gear_type 'Seaplanes'
-    takeoff_type 'Short'
+    takeoff_type 'Normal'
     thrust_source 'Electric'
-    engine 'Turboprop'
+    # engine 'Turboprop'
   end
 
-  puts
   puts airplane2.info
-  puts
 
   puts Airplane.compare(airplane, airplane2)
+
+  puts "Trying to create airplane with single attribute..."
+
+  airplane3 = Airplane.new do
+    purpose 'Civilian'
+    engine 'Turbojet'
+  end
+
+  airplane4 = Airplane.new do
+    purpose 'Military'
+    engine 'Turbojet'
+  end
+
+
+  puts "\n\nFirst airplane with few attributes:"
+  puts airplane3.info
+
+  puts "\n\nSecond airplane with few attributes:"
+  puts airplane4.info
+
+  puts Airplane.compare(airplane3, airplane4)
+
 rescue => e
   puts "Error: #{e.message}"
 end

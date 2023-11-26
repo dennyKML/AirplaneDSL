@@ -15,6 +15,7 @@ This Domain Specific Language (DSL) is designed to facilitate the description of
 - [Validation](#validation)
 - [Exceptions (Errors)](#exceptions-errors)
 - [Comparing Airplanes](#comparing-airplanes)
+- [Usage Example](#usage-example)
 
 ## Classes
 
@@ -24,13 +25,13 @@ The `Airplane` class represents an airplane and provides methods for describing 
 
 ## Attributes
 
-- `purpose`: Purpose of the airplane (e.g., "Military", "Civilian").
-- `weight_class`: Weight class of the airplane (1 to 4).
-- `speed`: Speed category of the airplane (e.g., "Subsonic", "Supersonic", "Hypersonic").
-- `landing_gear_type`: Type of landing gear (e.g., "Land-based", "Shipboard", "Seaplanes").
-- `takeoff_type`: Type of takeoff (e.g., "Vertical", "Short", "Normal").
-- `thrust_source`: Source of thrust (e.g., "Screw", "Jet", "Electric").
-- `engine`: Type of engine (e.g., "Turbojet", "Turboprop", "Piston").
+- `purpose`: Purpose of the airplane ("Military", "Civilian").
+- `weight_class`: Takeoff weight class of the airplane (1 to 4).
+- `speed`: Flight speed category of the airplane ("Subsonic", "Supersonic", "Hypersonic").
+- `landing_gear_type`: Type of landing gear ("Land-based", "Shipboard", "Seaplanes").
+- `takeoff_type`: Type of takeoff and landing ("Vertical", "Short", "Normal").
+- `thrust_source`: Source of thrust (engine type) ("Screw", "Jet", "Electric").
+- `engine`: Type of engine ("Turbojet", "Turboprop", "Piston").
 
 ## Methods
 
@@ -114,19 +115,18 @@ The DSL recognizes the following aircraft classifications:
 
 ## Validation
 
-This DSL includes a validation check to ensure that the attribute combination is valid. Invalid combinations will cause an exception with a descriptive error message.
+This DSL includes validation checks to ensure that the combination of attributes is valid. Invalid combinations will raise an exception with a descriptive error message.
 
 ## Exceptions (Errors)
 
-1. **Invalid Purpose:** Raised if the specified purpose is not one of the valid purposes.
-2. **Invalid Weight Class:** Raised if the specified weight class is not one of the valid weight classes.
-3. **Invalid Speed:** Raised if the specified speed is not one of the valid speeds.
-4. **Invalid Landing Gear Type:** Raised if the specified landing gear type is not one of the valid types.
-5. **Invalid Takeoff Type:** Raised if the specified takeoff type is not one of the valid types.
-6. **Invalid Thrust Source:** Raised if the specified thrust source is not one of the valid sources.
-7. **Invalid Engine Type:** Raised if the specified engine type is not one of the valid types.
-8. **Impossible Combinations:** Raised for specific combinations that are deemed impossible based on aircraft design standards.
-
+1. **Invalid Purpose**: Raised if the specified purpose is not one of the valid purposes.
+2. **Invalid Weight Class**: Raised if the specified weight class is not one of the valid weight classes.
+3. **Invalid Speed**: Raised if the specified speed is not one of the valid speeds.
+4. **Invalid Landing Gear Type**: Raised if the specified landing gear type is not one of the valid types.
+5. **Invalid Takeoff Type**: Raised if the specified takeoff type is not one of the valid types.
+6. **Invalid Thrust Source**: Raised if the specified thrust source is not one of the valid sources.
+7. **Invalid Engine Type**: Raised if the specified engine type is not one of the valid types.
+8. **Impossible Combinations**: Raised for specific combinations that are deemed impossible based on aircraft design standards.
 
 ## Comparing Airplanes
 
@@ -134,25 +134,75 @@ The `self.compare` method allows for a side-by-side comparison of two airplanes,
 
 ```ruby
 # Comparing two airplanes
-plane1 = Airplane.new do
-  purpose 'Military'
-  weight_class 1
-  speed 'Hypersonic'
-  landing_gear_type 'Land-based'
-  takeoff_type 'Normal'
-  thrust_source 'Jet'
-  engine 'Turbojet'
-end
-
-plane2 = Airplane.new do
-  purpose 'Civilian'
-  weight_class 2
-  speed 'Subsonic'
-  landing_gear_type 'Seaplanes'
-  takeoff_type 'Short'
-  thrust_source 'Electric'
-  engine 'Turboprop'
-end
+plane1 = Airplane.new { purpose 'Civilian' }
+plane2 = Airplane.new { purpose 'Military' }
 
 puts Airplane.compare(plane1, plane2)
+```
+
+## Usage Example
+
+An example of how to use this DSL ([example.rb](example.rb)):
+
+```ruby
+require_relative 'AirplaneDSL'
+
+begin
+  puts "Trying to create a new airplane..."
+
+  airplane = Airplane.new do
+    purpose 'Military'
+    weight_class 1
+    speed 'Hypersonic'
+    landing_gear_type 'Land-based'
+    takeoff_type 'Normal'
+    thrust_source 'Jet'
+    engine 'Turbojet'
+  end
+
+  puts airplane.info
+
+  airplane.update do
+    speed 'Supersonic'
+  end
+
+  puts "\nTrying to create one more new airplane..."
+  airplane2 = Airplane.new do
+    purpose 'Civilian'
+    weight_class 2
+    speed 'Subsonic'
+    landing_gear_type 'Seaplanes'
+    takeoff_type 'Normal'
+    thrust_source 'Electric'
+    # engine 'Turboprop'
+  end
+
+  puts airplane2.info
+
+  puts Airplane.compare(airplane, airplane2)
+
+  puts "Trying to create airplane with single attribute..."
+
+  airplane3 = Airplane.new do
+    purpose 'Civilian'
+    engine 'Turbojet'
+  end
+
+  airplane4 = Airplane.new do
+    purpose 'Military'
+    engine 'Turbojet'
+  end
+
+
+  puts "\n\nFirst airplane with few attributes:"
+  puts airplane3.info
+
+  puts "\n\nSecond airplane with few attributes:"
+  puts airplane4.info
+
+  puts Airplane.compare(airplane3, airplane4)
+
+rescue => e
+  puts "Error: #{e.message}"
+end
 ```
