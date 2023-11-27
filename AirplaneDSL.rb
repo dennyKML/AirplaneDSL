@@ -87,8 +87,12 @@ class Airplane
   end
 
   def update(&block)
-    instance_eval &block
-    validate!
+    if block_given?
+      instance_eval &block
+      validate!
+    else
+      raise "There is no block was given!"
+    end
   end
 
   def self.compare(airplane1, airplane2)
